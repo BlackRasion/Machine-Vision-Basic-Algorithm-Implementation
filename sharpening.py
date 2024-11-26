@@ -1,0 +1,21 @@
+import cv2 as cv
+import numpy as np
+
+def sobel_sharpen(image):
+    """使用Sobel算子进行锐化"""
+    blurred = cv.GaussianBlur(image, (5, 5), 0) # 高斯滤波，去噪
+    grad_x = cv.Sobel(blurred, cv.CV_64F, 1, 0, ksize=3) # 求x方向梯度
+    grad_y = cv.Sobel(blurred, cv.CV_64F, 0, 1, ksize=3) # 求y方向梯度
+    gradient_magnitude = cv.magnitude(grad_x, grad_y) # 梯度幅值
+    gradient_magnitude = np.uint8(255 * gradient_magnitude / np.max(gradient_magnitude)) # 归一化
+    sharpened_image = cv.addWeighted(image, 1.5, gradient_magnitude, 0.5, 0) # 叠加
+
+    return sharpened_image
+
+def laplacian_sharpen(lena):
+    """使用拉普拉斯算子进行锐化"""
+    lena_blurred_gaussian = cv.GaussianBlur(lena, (5, 5), 0) # 高斯滤波，去噪
+    laplacian = cv.Laplacian(lena_blurred_gaussian, cv.CV_64F) # 拉普拉斯算子锐化
+    laplacian = cv.convertScaleAbs(laplacian)
+    lena_laplacian = cv.addWeighted(lena, 1.5, laplacian, -0.5, 0) # 叠加结合原图和锐化结果
+    return lena_laplacian
