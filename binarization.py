@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import ipywidgets as widgets
 
 def fixed_threshold(image, threshold=127):
     """使用固定阈值进行二值化"""
@@ -18,3 +19,13 @@ def otsu_threshold(image):
     """使用Otsu方法自动计算阈值进行二值化"""
     _, binary_image = cv.threshold(image, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     return binary_image
+
+# 阈值滑动条，默认隐藏
+threshold_slider = widgets.IntSlider(
+    min=0,
+    max=255,
+    step=1,
+    value=127,
+    description='阈值:',
+    layout={'visibility': 'hidden'}
+)
