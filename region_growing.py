@@ -14,7 +14,7 @@ def region_growing(image, seed_point, threshold):
     - segmented_image: 分割后的图像，其中区域标记为255。
     """
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY) # 转换为灰度图像
-    image = np.float32(image)
+    image = np.float32(image) # 转换为浮点数
 
     # 获取图像的尺寸
     rows, cols = image.shape
