@@ -72,7 +72,7 @@ def My_otsu_threshold(image):
             sigma_b_squared = _sigma_b_squared
             threshold = t
             
-    print(f"Optimal threshold: {threshold}")
+    print(f"最优阈值: {threshold}")
 
     # 应用阈值进行分割
     binary_image = np.zeros_like(image, dtype=np.uint8)
