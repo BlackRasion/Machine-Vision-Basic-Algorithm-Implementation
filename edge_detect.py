@@ -46,8 +46,8 @@ def My_sobel_edge_detect(image):
                         [1, 2, 1]], dtype=float)
     
     # 计算水平和垂直方向的梯度
-    grad_x = convolve2d(image_blurred, sobel_x)
-    grad_y = convolve2d(image_blurred, sobel_y)
+    grad_x = convolve2d(image_blurred, sobel_x, padding=1)
+    grad_y = convolve2d(image_blurred, sobel_y, padding=1)
     
     # 计算梯度幅值
     gradient_magnitude = np.sqrt(grad_x**2 + grad_y**2)
