@@ -3,27 +3,23 @@ import cv2 as cv
 def detect_shapes(image):
     # 将图像转换为灰度图像
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    
     # 应用高斯模糊以减少噪声并改进轮廓检测
     blurred = cv.GaussianBlur(gray, (5, 5), 0)
-    
     # 使用Canny边缘检测器检测边缘
     edges = cv.Canny(blurred, 50, 150)
     
     # 查找边缘图像中的轮廓
     contours, _ = cv.findContours(edges.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    
     shapes = []
     
     for contour in contours:
+        shape = "unknown"
         # 计算轮廓的面积
         area = cv.contourArea(contour)
-        
         # 跳过面积过小的轮廓
         if area < 10:
             continue
 
-        # 近似轮廓
         epsilon = 0.02 * cv.arcLength(contour, True)
         approx = cv.approxPolyDP(contour, epsilon, True)
         
@@ -44,11 +40,10 @@ def detect_shapes(image):
             shape = "hexagon" # 六边形
         else:
             # 检查是否为圆形或椭圆
-            area = cv.contourArea(contour)
             perimeter = cv.arcLength(contour, True)
-            circularity = 4 * np.pi * (area / (perimeter ** 2))
-            
-            if circularity > 0.8:
+            circularity = 4 * np.pi * (area / (perimeter ** 2)) # 圆形度
+        
+            if circularity > 0.85:
                 shape = "circle" # 圆形
             else:
                 # 拟合椭圆并检查其偏心率
@@ -59,19 +54,17 @@ def detect_shapes(image):
                 
                 if eccentricity < 0.1:
                     shape = "circle" # 圆形
-                elif eccentricity < 0.7:
+                elif eccentricity < 0.9:
                     shape = "ellipse" # 椭圆
-                else:
-                    shape = "unknown"
         
-         # 在图像上绘制轮廓并在中心位置标注形状名称
+        # 在图像上绘制轮廓并在中心位置标注形状名称
         cv.drawContours(image, [contour], -1, (0, 255, 0), 2)
         M = cv.moments(contour)
         if M["m00"] != 0:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
             cv.putText(image, shape, (cX, cY), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
+
         shapes.append(shape)
     
     return image, shapes

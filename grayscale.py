@@ -10,6 +10,30 @@ def histogram_equalization(image):
     """执行灰度直方图均衡化"""
     return cv.equalizeHist(image)
 
+def My_hist_equalization(image):
+    # 确保输入是灰度图像
+    if len(image.shape) > 2 and image.shape[2] == 3:
+        image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    # 计算图像的直方图
+    hist, bins = np.histogram(image.flatten(), 256, [0, 256])
+
+    # 计算累积分布函数
+    cdf = hist.cumsum()
+    # 归一化累积分布函数
+    cdf_normalized = cdf * hist.max() / cdf.max()
+
+    # 忽略直方图中的零值
+    cdf_m = np.ma.masked_equal(cdf, 0)
+    cdf_m = (cdf_m - cdf_m.min())*255/(cdf_m.max()-cdf_m.min())
+    # 填充被忽略的值为0
+    cdf = np.ma.filled(cdf_m, 0).astype('uint8')
+
+    # 将原始图像映射到新的灰度值
+    img_eq = cdf[image]
+
+    return img_eq
+
 def linear_transformation(image, alpha=1.5, beta=15):
     """执行线性变换"""
     return cv.convertScaleAbs(image, alpha=alpha, beta=beta)
